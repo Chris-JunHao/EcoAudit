@@ -9,7 +9,7 @@
 - markdownlint
 - rainbow CSV
 
-### 环境建议
+### 项目环境
 
 ## 1️⃣ 项目介绍
 
