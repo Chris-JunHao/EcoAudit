@@ -2,7 +2,7 @@
 
 ## 0️⃣ tips
 
-### 插件建议
+### vsc插件建议
 
 - markdown all in one
 - codegeex
@@ -10,6 +10,8 @@
 - rainbow CSV
 
 ### 项目环境
+
+...
 
 ## 1️⃣ 项目介绍
 
