@@ -129,19 +129,6 @@ anomalies_df.to_csv('results/anomalies_detected.csv', index=False)
 
 ---
 
-### 5. 项目结构
-
-```
-project_directory/
-├── data/                         # 存放数据文件
-│   └── china_cities_20220102.csv  # 环境监测数据
-├── analysis_notebook.ipynb        # Jupyter Notebook 文件
-├── results/                       # 结果保存
-│   └── anomalies_detected.csv     # 保存检测到的异常数据
-```
-
----
-
-### 6. 结论
+### 5. 结论
 
 通过该实现计划，您可以使用 Jupyter Notebook 对环境监测数据进行全面的分析，包括数据加载、异常检测与可视化，最终生成报告并存储检测结果。
