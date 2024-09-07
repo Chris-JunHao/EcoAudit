@@ -100,3 +100,75 @@
 ## 若依交流群
 
 QQ群： [![加入QQ群](https://img.shields.io/badge/已满-1389287-blue.svg)](https://jq.qq.com/?_wv=1027&k=5HBAaYN)  [![加入QQ群](https://img.shields.io/badge/已满-1679294-blue.svg)](https://jq.qq.com/?_wv=1027&k=5cHeRVW)  [![加入QQ群](https://img.shields.io/badge/已满-1529866-blue.svg)](https://jq.qq.com/?_wv=1027&k=53R0L5Z)  [![加入QQ群](https://img.shields.io/badge/已满-1772718-blue.svg)](https://jq.qq.com/?_wv=1027&k=5g75dCU)  [![加入QQ群](https://img.shields.io/badge/已满-1366522-blue.svg)](https://jq.qq.com/?_wv=1027&k=58cPoHA)  [![加入QQ群](https://img.shields.io/badge/已满-1382251-blue.svg)](https://jq.qq.com/?_wv=1027&k=5Ofd4Pb)  [![加入QQ群](https://img.shields.io/badge/已满-1145125-blue.svg)](https://jq.qq.com/?_wv=1027&k=5yugASz)  [![加入QQ群](https://img.shields.io/badge/已满-86752435-blue.svg)](https://jq.qq.com/?_wv=1027&k=5Rf3d2P)  [![加入QQ群](https://img.shields.io/badge/已满-134072510-blue.svg)](https://jq.qq.com/?_wv=1027&k=5ZIjaeP)  [![加入QQ群](https://img.shields.io/badge/已满-210336300-blue.svg)](https://jq.qq.com/?_wv=1027&k=5CJw1jY)  [![加入QQ群](https://img.shields.io/badge/已满-339522636-blue.svg)](https://jq.qq.com/?_wv=1027&k=5omzbKc)  [![加入QQ群](https://img.shields.io/badge/已满-130035985-blue.svg)](https://jq.qq.com/?_wv=1027&k=qPIKBb7s)  [![加入QQ群](https://img.shields.io/badge/已满-143151071-blue.svg)](https://jq.qq.com/?_wv=1027&k=4NsjKbtU)  [![加入QQ群](https://img.shields.io/badge/已满-158781320-blue.svg)](https://jq.qq.com/?_wv=1027&k=VD2pkz2G)  [![加入QQ群](https://img.shields.io/badge/已满-201531282-blue.svg)](https://jq.qq.com/?_wv=1027&k=HlshFwkJ)  [![加入QQ群](https://img.shields.io/badge/已满-101526938-blue.svg)](https://jq.qq.com/?_wv=1027&k=0ARRrO9V)  [![加入QQ群](https://img.shields.io/badge/已满-264355400-blue.svg)](https://jq.qq.com/?_wv=1027&k=up9k3ZXJ)  [![加入QQ群](https://img.shields.io/badge/已满-298522656-blue.svg)](https://jq.qq.com/?_wv=1027&k=540WfdEr)  [![加入QQ群](https://img.shields.io/badge/已满-139845794-blue.svg)](https://jq.qq.com/?_wv=1027&k=ss91fC4t)  [![加入QQ群](https://img.shields.io/badge/已满-185760789-blue.svg)](https://jq.qq.com/?_wv=1027&k=Cqd66IKe) [![加入QQ群](https://img.shields.io/badge/已满-175104288-blue.svg)](https://jq.qq.com/?_wv=1027&k=7FplYUnR) [![加入QQ群](https://img.shields.io/badge/已满-174942938-blue.svg)](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=lqMHu_5Fskm7H2S1vNAQTtzAUokVydwc&authKey=ptw0Fpch5pbNocML3CIJKKqZBaq2DI7cusKuzIgfMNiY3t9Pvd9hP%2BA8WYx3yaY1&noverify=0&group_code=174942938) [![加入QQ群](https://img.shields.io/badge/287843737-blue.svg)](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=blYlRDmwZXSXI5pVrPPU7ZJ1stFJ6Q2Q&authKey=ForGBWffHVlPt9NE3d7g4DoOIouBh%2BqvAj2lp1CLReHfZAUaK7SRrdwsChKpRJDJ&noverify=0&group_code=287843737)
+
+
+## 目录结构
+这个目录结构是基于**若依（RuoYi）框架**的典型项目结构，它采用了模块化的设计方法，方便项目的开发、维护和扩展。每个模块都有不同的职责，下面我将逐一解释这些模块的功能：
+
+### 1. **com.ruoyi.common** - 公共模块（工具类）
+
+这个模块包含了一些在整个项目中都会用到的**公共工具类**和功能性代码，所有模块都可以引用这里的工具类。
+
+- **annotation**：自定义注解，用于简化某些操作或特定场景下的开发。例如，可以有用于权限控制、日志记录等的注解。
+- **config**：全局配置类，负责项目的全局性设置。例如，数据库连接配置、系统属性配置等。
+- **constant**：通用常量类，存放全局使用的常量值。例如，状态码、错误信息等常量。
+- **core**：核心控制，包含项目的核心业务逻辑，通常与核心功能的控制相关。
+- **enums**：通用枚举类，定义项目中常用的枚举类型，方便代码中使用。
+- **exception**：通用异常处理类，用于处理系统中的异常情况，包括自定义异常类型及其处理方式。
+- **json**：与JSON数据处理相关的工具类，负责将对象转换为JSON格式或从JSON格式转换为对象。
+- **utils**：工具类集合，提供常用的辅助方法，如字符串处理、日期处理等，简化开发中的常见任务。
+- **xss**：XSS过滤相关的处理类，负责防止跨站脚本攻击（XSS），提高系统的安全性。
+
+### 2. **com.ruoyi.framework** - 框架核心模块
+
+该模块主要负责项目的核心框架功能和系统配置，提供了跨模块的基础服务。
+
+- **aspectj**：切面编程（AOP）相关的功能实现，主要用于注解功能的实现。常用于日志记录、权限验证等切面操作。
+- **config**：系统级别的配置，通常包括安全、缓存、事务管理等系统的配置文件。
+- **datasource**：数据源管理和数据权限控制，主要用于多数据源的支持和数据访问的权限控制。
+- **interceptor**：拦截器相关类，用于在请求处理前后进行拦截，如用户认证、日志记录等。
+- **manager**：负责异步处理的管理模块，通常包括线程池的管理和任务调度。
+- **shiro**：权限控制模块，使用Apache Shiro进行权限和认证控制，负责用户身份验证、授权和会话管理等功能。
+- **web**：Web层的控制模块，主要用于前端和后端的交互控制，如请求处理、响应结果等。
+
+### 3. **ruoyi-generator** - 代码生成模块
+
+这个模块用于**代码生成**，如果不需要自动生成代码的功能，可以将其移除。
+
+- 它主要用于生成前后端代码（如实体类、DAO层、Service层、Controller层等），根据数据库表结构自动生成相应的CRUD代码，节省开发时间。
+
+### 4. **ruoyi-quartz** - 定时任务模块
+
+这个模块用于定时任务的调度和管理。如果项目不涉及定时任务，可以将其移除。
+
+- **Quartz** 是一个强大的定时任务调度框架，用于在系统中执行周期性任务。你可以在这里定义和管理需要定时执行的任务，如数据同步、定期报告生成等。
+
+### 5. **ruoyi-system** - 系统模块
+
+这是项目的**核心业务模块**，包含了项目的主要业务逻辑和系统功能。
+
+- 在这个模块中，通常会有与用户管理、角色管理、权限管理等相关的功能代码，以及与项目的核心业务逻辑相关的代码。
+
+### 6. **ruoyi-admin** - 后台管理模块
+
+该模块是项目的**后台服务模块**，通常用于处理管理端的请求。
+
+- 这个模块包含了后台管理的业务逻辑，负责管理端的操作（如用户管理、权限管理等），并通过接口与前端进行数据交互。
+
+### 7. **ruoyi-xxxxxx** - 其他自定义模块
+
+你可以根据项目的需求，在这里添加其他的模块，模块命名通常按照功能进行命名，例如`ruoyi-file`用于文件管理，`ruoyi-report`用于报告管理等。这个部分通常用来添加项目的业务功能模块，便于扩展和维护。
+
+---
+
+### 典型模块功能说明：
+
+- **common**模块：通用工具类，提供项目基础功能支持。
+- **framework**模块：核心系统框架，管理项目的基础框架配置、权限控制、数据源管理等。
+- **generator**模块：代码自动生成器，简化重复性的代码开发任务。
+- **quartz**模块：定时任务管理，处理后台自动化任务。
+- **system**模块：核心业务逻辑，实现系统的具体功能。
+- **admin**模块：后台服务，用于处理管理端的操作请求。
+- **其他模块**：项目可以根据需求扩展，添加特定功能的业务模块。
+
+这个结构清晰地将不同功能模块化，便于开发、扩展、维护，也符合良好的**面向对象设计原则**。
