@@ -6,7 +6,7 @@
 
 ## 技术栈
 
-spring boot + mybatis + vue + echarts
+vue + echarts
 
 ## 功能描述
 
