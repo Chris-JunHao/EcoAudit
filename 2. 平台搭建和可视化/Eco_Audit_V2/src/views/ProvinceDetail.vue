@@ -217,27 +217,45 @@ export default {
 <style scoped>
 .main-container {
   display: flex;
+  background-color: #f9f9f9;
+  height: 100vh;
 }
 
 .sidebar {
   width: 20%;
-  background-color: #f5f5f5;
+  background-color: #2c3e50; /* 使用深色背景 */
+  color: #ecf0f1; /* 文字颜色改为浅色 */
   padding: 20px;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1); /* 增加较明显的阴影 */
+  font-family: 'Arial', sans-serif;
+  border-radius: 0 10px 10px 0; /* 增加圆角，柔化边缘 */
+}
+.sidebar h2 {
+  font-size: 24px;
+  color: #ecf0f1;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #34495e;
+  padding-bottom: 10px;
 }
 
 .content {
   width: 80%;
   padding: 20px;
+  background-color: rgb(171, 212, 238);
 }
 
 .table-container {
   height: 750px;
   overflow: hidden;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
+  font-size: 14px;
 }
 
 th, td {
@@ -248,58 +266,87 @@ th, td {
 
 thead {
   background-color: #7bd27f;
+  color: #fff;
 }
 
 ul {
   list-style-type: none;
   padding: 0;
+  margin-top: 20px;
 }
 
 li {
   cursor: pointer;
-  padding: 10px;
-  border-bottom: 1px solid #654758;
+  padding: 15px 10px;
+  background-color: #34495e; /* 列表项背景颜色加深 */
+  margin-bottom: 10px;
+  border-radius: 5px;
+  transition: all 0.3s ease; /* 增加过渡效果 */
+  display: flex;
+  align-items: center; /* 居中对齐文字 */
+  font-size: 16px;
 }
 
 li:hover {
-  background-color: #53de5c;
+  background-color: #1abc9c; /* 悬停时背景变为鲜艳的绿色 */
+  color: white;
+  transform: translateX(5px); /* 悬停时有轻微的移动效果 */
 }
+
 
 .submenu {
   margin-left: 20px;
   display: flex;
   flex-direction: column;
-  background-color: #42b983;
 }
+
 
 .submenu button {
   margin-top: 10px;
-  background-color: #ffffff;
-  color: #42b983;
-  border: 1px solid #42b983;
-  padding: 15px; /* 增大按钮尺寸 */
+  background-color: #1abc9c;
+  color: white;
+  border: none;
+  padding: 12px;
   border-radius: 5px;
   font-size: 16px;
+  transition: background-color 0.3s ease;
 }
 
 .submenu button:hover {
-  background-color: #42b983;
-  color: white;
+  background-color: #16a085;
 }
 
 .scroll-container {
   max-height: 300px;
   overflow-y: auto;
-  border: 1px solid #574c4c;
+  border: 1px solid #34495e;
   padding: 10px;
+  border-radius: 5px;
+  background-color: #34495e;
 }
 
 .main-image {
   max-width: 85%;
   height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
-.big-button{
+
+.big-button {
   padding: 12px;
 }
 
+.mid-button {
+  padding: 8px;
+  background-color: #42b983;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.mid-button:hover {
+  background-color: #358d6a;
+}
 </style>

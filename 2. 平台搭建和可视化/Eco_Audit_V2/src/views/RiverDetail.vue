@@ -1,4 +1,4 @@
-<template>
+<template >
   <div class="main-container">
     <div class="sidebar">
       <h2>功能栏</h2>
@@ -269,54 +269,71 @@ export default {
 <style scoped>
 .main-container {
   display: flex;
+  height: 100vh;
+  background-color: #f9f9f9; /* 使用柔和的背景色 */
 }
+
 
 .sidebar {
   width: 20%;
-  background-color: #f5f5f5;
+  background-color: #34495e; /* 功能栏背景改为深色，提升整体对比度 */
   padding: 20px;
+  color: #ecf0f1; /* 浅色字体 */
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1); /* 增加阴影效果 */
+  font-family: 'Arial', sans-serif;
+}
+.sidebar h2 {
+  font-size: 24px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #2c3e50;
+  padding-bottom: 10px;
 }
 
 .content {
+  background-color: rgb(171, 212, 238);
   width: 80%;
   padding: 20px;
 }
 
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
 li {
   cursor: pointer;
-  padding: 10px;
-  border-bottom: 1px solid #ccc;
+  padding: 15px 10px;
+  margin-bottom: 10px;
+  background-color: #2c3e50; /* 列表项背景颜色 */
+  border-radius: 5px;
+  transition: background-color 0.3s, transform 0.3s ease; /* 添加平滑的过渡效果 */
 }
-
 li:hover {
-  background-color: #f0f0f0;
+  background-color: #1abc9c; /* 悬停时背景变为鲜明的绿色 */
+  transform: translateX(5px); /* 悬停时有轻微的位移效果 */
+  color: white; /* 悬停时文字变为白色 */
 }
-
 .submenu {
-  margin-left: 20px;
+  margin-left: 10px;
+  padding-left: 10px;
+  border-left: 2px solid #2c3e50; /* 增加分隔线，清晰层次 */
   display: flex;
   flex-direction: column;
 }
-
 .submenu select,
 .submenu input {
   margin-top: 10px;
-  padding: 5px;
+  padding: 8px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
 button {
-  margin-top: 10px;
-  background-color: #42b983;
+  margin-top: 15px;
+  background-color: #1abc9c;
   color: white;
   border: none;
-  padding: 10px 15px;
+  padding: 12px 20px;
+  font-size: 16px;
   cursor: pointer;
   border-radius: 5px;
+  transition: background-color 0.3s ease; /* 增加按钮悬停效果 */
 }
 
 button:hover {
@@ -326,7 +343,12 @@ button:hover {
 /* 数据展示部分样式 */
 .table-container {
   height: 750px;
-  overflow: hidden; /* 隐藏溢出的内容，实现滚动效果 */
+  overflow-y: auto; /* 实现垂直滚动 */
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 增加阴影效果 */
+  background-color:rgb(245, 235, 217);
 }
 
 table {
@@ -341,6 +363,7 @@ th, td {
 }
 
 thead {
-  background-color: #f5f5f5;
+  background-color: #1abc9c; /* 表头背景 */
+  color: #fff;
 }
 </style>
