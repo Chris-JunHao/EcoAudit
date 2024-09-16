@@ -1,56 +1,77 @@
-
 <template>
   <div class="main-container">
-    <h2>{{ province }}的水质监测</h2>
+    <!-- 左边功能栏 -->
+    <div class="sidebar">
+      <h2>功能栏</h2>
+      <ul>
+        <!-- 数据概览部分 -->
+        <li @click="toggleOverview">数据概览</li>
+        <div v-if="showOverviewSection" class="submenu">
+          <button class="big-button" @click="toggleStatsSection">数据统计</button>
+          <div v-if="showStatsSection">
+            <!-- 选择属性和日期 -->
+            <label for="attribute">选择属性:</label>
+            <select id="attribute" v-model="selectedAttribute">
+              <option v-for="attr in attributes" :key="attr" :value="attr">{{ attr }}</option>
+            </select>
 
-    <!-- 控件按钮 -->
-    <div class="buttons">
-      <button @click="showOverview">数据概览</button>
-      <button @click="showModify">数据修改</button>
-      <button @click="showRiverDetails">河流详情</button>
-    </div>
+            <label for="start-date">开始日期:</label>
+            <input type="date" id="start-date" v-model="startDate" min="2021-01-01" max="2021-12-31" />
 
-    <!-- 数据概览 -->
-    <div v-if="showSection === 'overview'">
-      <h3>数据概览</h3>
-      <p>这是{{ province }}的水质监测数据概览。</p>
-    </div>
+            <label for="end-date">结束日期:</label>
+            <input type="date" id="end-date" v-model="endDate" min="2021-01-01" max="2021-12-31" />
 
-    <!-- 数据修改 -->
-    <div v-if="showSection === 'modify'">
-      <h3>数据修改</h3>
-      <p>数据修改功能尚未实现。</p>
-    </div>
-
-    <!-- 河流详情 -->
-    <div v-if="showSection === 'riverDetails'">
-      <h3>河流详情</h3>
-
-      <!-- 选择河流的form -->
-      <div class="river-select">
-        <label for="river">选择河流:</label>
-        <select id="river" v-model="selectedRiver">
-          <option v-for="river in rivers" :key="river" :value="river">{{ river }}</option>
-        </select>
-        <button @click="fetchRiverData">显示河流数据</button>
-      </div>
-
-      <!-- 如果选择了东苕溪，显示日期选择和图表 -->
-      <div v-if="selectedRiver === '东苕溪' && showChart">
-        <h3>{{ selectedRiver }}的水质监测数据</h3>
-
-        <!-- 日期范围选择 -->
-        <div class="date-picker">
-          <label for="start-date">开始日期:</label>
-          <input type="date" id="start-date" v-model="startDate" />
-          
-          <label for="end-date">结束日期:</label>
-          <input type="date" id="end-date" v-model="endDate" />
-          
-          <button @click="filterData">筛选</button>
+            <button class="mid-button" @click="showAttributeChart">显示图表</button>
+          </div>
+          <button class="big-button" @click="showDataDisplay">数据展示</button>
         </div>
 
+        <!-- 河流详情部分 -->
+        <li @click="toggleRiverDetails">河流详情</li>
+        <div v-if="showRiverSection" class="submenu">
+          <h2>选择河流</h2>
+          <div class="scroll-container">
+            <ul>
+              <li v-for="river in rivers" :key="river" @click="selectRiver(river)">
+                {{ river }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </ul>
+    </div>
+
+    <!-- 右侧内容 -->
+    <div class="content">
+      <!-- 省份地图 -->
+      <div v-if="showSection === ''">
+        <h2>{{ province }}的地图</h2>
+        <img src="/Zhejiang.jpg" alt="Water Quality Image" class="main-image" />
+      </div>
+
+      <!-- 数据统计部分 -->
+      <div v-if="showSection === 'stats'">
+        <h3>{{ selectedAttribute }} 图表</h3>
         <div id="chart" style="width: 100%; height: 400px;"></div>
+      </div>
+
+      <!-- 数据展示部分 -->
+      <div v-if="showSection === 'display'">
+        <h3>数据展示</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th v-for="(header, index) in tableHeaders" :key="index">{{ header }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, index) in paginatedData" :key="index">
+                <td v-for="(value, key) in row" :key="key">{{ value }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -65,110 +86,129 @@ export default {
   props: ['province'],
   data() {
     return {
-      rivers: ['东苕溪', '河流B', '河流C'], // 省份下的河流列表
-      selectedRiver: null, // 选中的河流
-      showSection: '', // 控制显示哪个控件
-      csvData: [], // 存储从后端获取的水质监测数据
-      filteredData: [], // 存储筛选后的数据
-      startDate: '', // 用户选择的开始日期
-      endDate: '', // 用户选择的结束日期
-      showChart: false, // 是否显示图表
+      showOverviewSection: false,
+      showStatsSection: false,
+      showRiverSection: false,
+      showSection: '',
+      rivers: ['东苕溪', '分水江', '富春江', '京杭运河', '南苕溪', '千岛湖', '钱塘江', '浦阳江', '新安江'], // 河流列表
+      selectedAttribute: null,
+      csvData: [],
+      tableHeaders: [],
+      attributes: ['水质类别', '水温', 'pH', '溶解氧', '高锰酸钾', '氨氮', '总磷', '总氮', '电导率', '浊度'],
+      startDate: '2021-01-01',
+      endDate: '2021-12-31',
+      currentPage: 1,
+      pageSize: 50,
     };
   },
+  computed: {
+    paginatedData() {
+      const start = (this.currentPage - 1) * this.pageSize;
+      const end = start + this.pageSize;
+      return this.csvData.slice(start, end);
+    },
+  },
   methods: {
-    // 显示数据概览
-    showOverview() {
-      this.showSection = 'overview';
+    toggleOverview() {
+      this.showOverviewSection = !this.showOverviewSection;
     },
-    // 显示数据修改
-    showModify() {
-      this.showSection = 'modify';
+    toggleStatsSection() {
+      this.showStatsSection = !this.showStatsSection;
+      this.showSection = 'stats';
     },
-    // 显示河流详情的控件
-    showRiverDetails() {
-      this.showSection = 'riverDetails';
+    toggleRiverDetails() {
+      this.showRiverSection = !this.showRiverSection;
     },
-    // 根据选择的河流获取对应的CSV数据
-
-async fetchRiverData() {
-   if (!this.selectedRiver) {
-     alert('请选择河流');
-     return;
-   }
-   if (this.selectedRiver === '东苕溪') {
-     try {
-       const response = await axios.get('/public/东苕溪202101-202112.csv');
-       console.log(response.data); // 调试
-       Papa.parse(response.data, {
-         header: true,
-         dynamicTyping: true,
-         complete: (result) => {
-           this.csvData = this.processCSV(result.data);
-           this.filteredData = this.csvData;
-           this.showChart = true; // 显示图表
-           this.$nextTick(() => { 
-             this.initChart();
-           });
-         },
-       });
-     } catch (error) {
-       console.error('数据加载失败', error);
-     }
-   }
- 
-
+    showDataDisplay() {
+      this.showSection = 'display';
+      this.loadExcelData();
     },
-    // 处理解析后的CSV数据
-
-    processCSV(data) {
-      return data.map(item => ({
-        time: item['监测时间'],
-        pH: item['pH'],
-        dissolvedOxygen: item['溶解氧'],
-        conductivity: item['电导率'],
-      }));
+    async loadExcelData() {
+      try {
+        const response = await axios.get(`/public/province/Zhejiang/浙江杭州2021.csv`);
+        Papa.parse(response.data, {
+          header: true,
+          dynamicTyping: true,
+          complete: (result) => {
+            this.csvData = result.data;
+            this.tableHeaders = Object.keys(result.data[0]);
+            this.initAutoScroll();
+          },
+        });
+      } catch (error) {
+        console.error('加载数据失败:', error);
+      }
     },
-    // 初始化ECharts图表
-    initChart() {
+    showAttributeChart() {
       const chart = echarts.init(document.getElementById('chart'));
-
-      const times = this.filteredData.map(item => item.time);
-      const phValues = this.filteredData.map(item => item.pH);
-      const dissolvedOxygenValues = this.filteredData.map(item => item.dissolvedOxygen);
-      const conductivityValues = this.filteredData.map(item => item.conductivity);
-
-      const option = {
-        title: { text: `${this.selectedRiver} 水质监测数据` },
-        tooltip: { trigger: 'axis' },
-        legend: { data: ['pH', '溶解氧', '电导率'] },
-        xAxis: {
-          type: 'category',
-          data: times,
-          axisLabel: { rotate: 45, interval: 10 },
-        },
-        yAxis: [{ type: 'value', name: '数值' }],
-        series: [
-          { name: 'pH', type: 'line', data: phValues },
-          { name: '溶解氧', type: 'line', data: dissolvedOxygenValues },
-          { name: '电导率', type: 'line', data: conductivityValues },
-        ],
-      };
-
-      chart.setOption(option);
-    },
-    // 根据日期范围筛选数据
-    filterData() {
-      const start = new Date(this.startDate);
-      const end = new Date(this.endDate);
-      
-      // 过滤数据，确保时间在选择的范围内
-      this.filteredData = this.csvData.filter(item => {
-        const itemDate = new Date(item.time);
-        return itemDate >= start && itemDate <= end;
+      const data = this.csvData.filter(row => {
+        const date = new Date(row['监测时间']);
+        return date >= new Date(this.startDate) && date <= new Date(this.endDate);
       });
 
-      // 重新绘制图表
-      this.initChart();
+      if (this.selectedAttribute === '水质类别') {
+        const waterQualityCount = {};
+        data.forEach(item => {
+          const category = item['水质类别'];
+          if (category) {
+            waterQualityCount[category] = (waterQualityCount[category] || 0) + 1;
+          }
+        });
+
+        const pieData = Object.keys(waterQualityCount).map(category => ({
+          name: category,
+          value: waterQualityCount[category],
+        }));
+
+        const option = {
+          title: { text: '水质类别统计', left: 'center' },
+          tooltip: { trigger: 'item' },
+          series: [
+            {
+              name: '水质类别',
+              type: 'pie',
+              radius: '50%',
+              data: pieData,
+            },
+          ],
+        };
+
+        chart.setOption(option);
+      } else {
+        const times = data.map(item => item['监测时间']);
+        const values = data.map(item => item[this.selectedAttribute]);
+
+        const option = {
+          title: { text: `${this.selectedAttribute} 变化图` },
+          xAxis: { type: 'category', data: times },
+          yAxis: { type: 'value' },
+          series: [
+            {
+              name: this.selectedAttribute,
+              type: 'line',
+              data: values,
+            },
+          ],
+        };
+
+        chart.setOption(option);
+      }
+    },
+    initAutoScroll() {
+      const tableContainer = document.querySelector('.table-container');
+      let scrollAmount = 0;
+      const step = () => {
+        scrollAmount += 1;
+        tableContainer.scrollTop = scrollAmount;
+        if (scrollAmount >= tableContainer.scrollHeight - tableContainer.clientHeight) {
+          scrollAmount = 0; // 当到达底部时，重新开始
+        }
+        requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    },
+    selectRiver(river) {
+      this.$router.push({ name: 'RiverDetail', params: { river } });
     },
   },
 };
@@ -176,51 +216,90 @@ async fetchRiverData() {
 
 <style scoped>
 .main-container {
+  display: flex;
+}
+
+.sidebar {
+  width: 20%;
+  background-color: #f5f5f5;
   padding: 20px;
 }
 
-.buttons {
-  margin-bottom: 20px;
+.content {
+  width: 80%;
+  padding: 20px;
 }
 
-button {
+.table-container {
+  height: 750px;
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+}
+
+thead {
+  background-color: #7bd27f;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  cursor: pointer;
+  padding: 10px;
+  border-bottom: 1px solid #654758;
+}
+
+li:hover {
+  background-color: #53de5c;
+}
+
+.submenu {
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+  background-color: #42b983;
+}
+
+.submenu button {
+  margin-top: 10px;
+  background-color: #ffffff;
+  color: #42b983;
+  border: 1px solid #42b983;
+  padding: 15px; /* 增大按钮尺寸 */
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.submenu button:hover {
   background-color: #42b983;
   color: white;
-  border: none;
-  padding: 15px 15px;
-  cursor: pointer;
-  border-radius: 10px;
-  margin-right: 10px;
 }
 
-button:hover {
-  background-color: #2a9662;
+.scroll-container {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #574c4c;
+  padding: 10px;
 }
 
-.river-select {
-  margin-top: 20px;
+.main-image {
+  max-width: 85%;
+  height: auto;
 }
-
-.date-picker {
-  margin: 20px 0;
+.big-button{
+  padding: 12px;
 }
-
-.date-picker label {
-  margin-right: 20px;
-}
-
-.date-picker input {
-  margin-right: 20px;
-  padding: 20px;
-}
-
-#chart {
-  width: 100%;
-  height: 400px;
-}
-
 
 </style>
-
-
-  
