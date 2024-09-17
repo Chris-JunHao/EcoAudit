@@ -243,14 +243,24 @@ export default {
   padding: 20px;
   background-color: rgb(171, 212, 238);
 }
-
 .table-container {
   height: 750px;
-  overflow: hidden;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  overflow-y: auto; /* 实现垂直滚动 */
   padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 增加阴影效果 */
+  background-color: rgb(193, 215, 248);
+
+  /* 添加边框颜色和边框粗细 */
+  border: 2px solid rgb(26, 27, 30); /* 设置边框颜色和粗细 */
 }
+.table-container th, 
+.table-container td {
+  border: 2px solid rgb(39, 42, 48); /* 设置表格内部边框颜色和粗细 */
+  padding: 8px;
+  text-align: left;
+}
+
 
 table {
   width: 100%;
@@ -258,11 +268,6 @@ table {
   font-size: 14px;
 }
 
-th, td {
-  border: 1px solid #ccc;
-  padding: 10px;
-  text-align: left;
-}
 
 thead {
   background-color: #7bd27f;

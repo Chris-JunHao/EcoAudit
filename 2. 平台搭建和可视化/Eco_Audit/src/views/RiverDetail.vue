@@ -1,4 +1,4 @@
-<template >
+<template>
   <div class="main-container">
     <div class="sidebar">
       <h2>功能栏</h2>
@@ -57,11 +57,37 @@
 
       <!-- 数据审查部分 -->
       <div v-if="showSection === 'review'">
-        <h3>数据审查</h3>
+        <h3>异常数据审查</h3>
+        <div v-if="showTable" class="table-container">
+          <!-- 显示表格 -->
+          <table>
+            <thead>
+              <tr>
+                <th v-for="(header, index) in reviewHeaders" :key="index">{{ header }}</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, index) in filteredData" :key="index">
+                <td v-for="(header, idx) in reviewHeaders" :key="idx">{{ row[header] }}</td>
+                <td>
+                  <button @click="showSHAPChart(index)">显示 SHAP 图表</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div v-else>
+          <!-- 只显示图表 -->
+          <div id="shap-chart" style="width: 100%; height: 400px;"></div>
+          <button @click="showTable = true">返回表格</button>
+        </div>
       </div>
     </div>
   </div>
 </template>
+
 <script>
 import * as echarts from 'echarts';
 import Papa from 'papaparse';
@@ -74,14 +100,22 @@ export default {
       csvData: [], // 存储水质监测数据
       tableHeaders: [], // 表头
       attributes: ['水质类别', '水温', 'pH', '溶解氧', '高锰酸钾', '氨氮', '总磷', '总氮', '电导率', '浊度'], // 属性列表
+      shapAttributes: ['SHAP_水温', 'SHAP_pH', 'SHAP_溶解氧', 'SHAP_高锰酸钾', 'SHAP_氨氮', 'SHAP_总磷', 'SHAP_总氮', 'SHAP_电导率', 'SHAP_浊度'], // SHAP 属性
       selectedAttribute: null, // 选中的属性
       showStatsSection: false, // 控制数据统计部分显示/隐藏
       showSection: '', // 当前显示的部分（数据展示、数据统计等）
       startDate: '2021-01-01', // 用户选择的开始日期，默认值设为2021-01-01
       endDate: '2021-12-31', // 用户选择的结束日期，默认值设为2021-12-31
       showChart: false, // 是否显示图表
+      isChartVisible: [], // 存储每行图表是否显示的状态
       currentPage: 1, // 当前页
       pageSize: 50, // 每页显示的数据数量
+      showTable: true, // 控制数据审查表格或图表的显示
+      reviewHeaders: [
+        '城市', '河流', '流域', '断面名称', '监测时间', 
+        '水质类别', '水温', 'pH', '溶解氧', '高锰酸钾', 
+        '氨氮', '总磷', '总氮', '电导率', '浊度'
+      ], // 显示的表格列
     };
   },
   computed: {
@@ -114,7 +148,62 @@ export default {
         console.error('数据加载失败', error);
       }
     },
+    
+    // 显示数据审查部分
+    async showDataReview() {
+      this.showSection = 'review';
+      // 使用特定路径读取异常数据文件
+      try {
+        const response = await axios.get(`/public/province/Zhejiang/Anomaly/${encodeURIComponent(this.river)}.csv`);
+        Papa.parse(response.data, {
+          header: true,
+          dynamicTyping: true,
+          complete: (result) => {
+            // 只过滤出异常数据，但保留所有字段（包括 SHAP 属性）
+            this.filteredData = result.data.filter(row => row.Anomaly);
+            this.isChartVisible = this.filteredData.map(() => false); // 初始化每行图表显示状态为 false
+          },
+        });
+      } catch (error) {
+        console.error('异常数据加载失败', error);
+      }
+    },
+  
+    // 显示 SHAP 图表
+    showSHAPChart(index) {
+      // 隐藏表格，显示图表
+      this.showTable = false;
 
+      // 初始化 ECharts 图表
+      this.$nextTick(() => {
+        const chartContainer = document.getElementById('shap-chart');
+
+        if (chartContainer) {
+          const chart = echarts.init(chartContainer);
+          const selectedRow = this.filteredData[index];
+          const shapData = this.shapAttributes.map(attr => {
+            const value = selectedRow[attr];
+            return value < 0 ? 0 : value; // 负值替换为0
+          });
+
+          const option = {
+            title: { text: 'SHAP 值分析' },
+            tooltip: { trigger: 'axis' },
+            xAxis: { type: 'category', data: this.shapAttributes },
+            yAxis: { type: 'value' },
+            series: [
+              {
+                name: 'SHAP 值',
+                type: 'bar',
+                data: shapData.sort((a, b) => b - a), // 降序排列
+              },
+            ],
+          };
+          chart.setOption(option);
+        }
+      });
+    },
+    
     // 初始化自动滚动功能
     initAutoScroll() {
       const tableContainer = document.querySelector('.table-container');
@@ -175,10 +264,15 @@ export default {
         totalNitrogen: item['总氮'],
         conductivity: item['电导率'],
         turbidity: item['浊度'],
+        // 包含 SHAP 属性
+        ...this.shapAttributes.reduce((acc, attr) => {
+          acc[attr] = item[attr];
+          return acc;
+        }, {}),
       }));
     },
 
-    // 初始化ECharts图表
+    // 初始化 ECharts 图表
     initChart() {
       const chart = echarts.init(document.getElementById('chart'));
       const attributeMap = {
@@ -258,21 +352,16 @@ export default {
         return itemDate >= start && itemDate <= end;
       });
     },
-
-    // 显示数据审查部分
-    showDataReview() {
-      this.showSection = 'review';
-    },
   },
 };
 </script>
+
 <style scoped>
 .main-container {
   display: flex;
   height: 100vh;
   background-color: #f9f9f9; /* 使用柔和的背景色 */
 }
-
 
 .sidebar {
   width: 20%;
@@ -344,21 +433,24 @@ button:hover {
 .table-container {
   height: 750px;
   overflow-y: auto; /* 实现垂直滚动 */
-  background-color: #f9f9f9;
   padding: 10px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 增加阴影效果 */
-  background-color:rgb(245, 235, 217);
+  background-color: rgb(193, 215, 248);
+
+  /* 添加边框颜色和边框粗细 */
+  border: 2px solid rgb(26, 27, 30); /* 设置边框颜色和粗细 */
 }
 
-table {
+.table-container table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: collapse; /* 去掉单元格间隙 */
 }
 
-th, td {
-  border: 1px solid #ccc;
-  padding: 10px;
+.table-container th, 
+.table-container td {
+  border: 2px solid rgb(39, 42, 48); /* 设置表格内部边框颜色和粗细 */
+  padding: 8px;
   text-align: left;
 }
 
