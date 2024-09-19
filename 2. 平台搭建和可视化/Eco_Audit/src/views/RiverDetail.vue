@@ -1,7 +1,7 @@
 <template>
   <div class="main-container">
     <div class="sidebar">
-      <h2>功能栏</h2>
+      <h2 >功能栏</h2>
       <ul>
         <!-- 数据展示控件 -->
         <li @click="showDataDisplay">数据展示</li>
@@ -59,7 +59,6 @@
       <div v-if="showSection === 'review'">
         <h3>异常数据审查</h3>
         <div v-if="showTable" class="table-container">
-          <!-- 显示表格 -->
           <table>
             <thead>
               <tr>
@@ -79,7 +78,6 @@
         </div>
 
         <div v-else>
-          <!-- 只显示图表 -->
           <div id="shap-chart" style="width: 100%; height: 400px;"></div>
           <button @click="showTable = true">返回表格</button>
         </div>
@@ -97,29 +95,29 @@ export default {
   props: ['river'],
   data() {
     return {
-      csvData: [], // 存储水质监测数据
-      tableHeaders: [], // 表头
-      attributes: ['水质类别', '水温', 'pH', '溶解氧', '高锰酸钾', '氨氮', '总磷', '总氮', '电导率', '浊度'], // 属性列表
-      shapAttributes: ['SHAP_水温', 'SHAP_pH', 'SHAP_溶解氧', 'SHAP_高锰酸钾', 'SHAP_氨氮', 'SHAP_总磷', 'SHAP_总氮', 'SHAP_电导率', 'SHAP_浊度'], // SHAP 属性
-      selectedAttribute: null, // 选中的属性
-      showStatsSection: false, // 控制数据统计部分显示/隐藏
-      showSection: '', // 当前显示的部分（数据展示、数据统计等）
-      startDate: '2021-01-01', // 用户选择的开始日期，默认值设为2021-01-01
-      endDate: '2021-12-31', // 用户选择的结束日期，默认值设为2021-12-31
-      showChart: false, // 是否显示图表
-      isChartVisible: [], // 存储每行图表是否显示的状态
-      currentPage: 1, // 当前页
-      pageSize: 50, // 每页显示的数据数量
-      showTable: true, // 控制数据审查表格或图表的显示
+      csvData: [],
+      tableHeaders: [],
+      attributes: ['水质类别', '水温', 'pH', '溶解氧', '高锰酸钾', '氨氮', '总磷', '总氮', '电导率', '浊度'],
+      shapAttributes: ['SHAP_水温', 'SHAP_pH', 'SHAP_溶解氧', 'SHAP_高锰酸钾', 'SHAP_氨氮', 'SHAP_总磷', 'SHAP_总氮', 'SHAP_电导率', 'SHAP_浊度'],
+      selectedAttribute: null,
+      showStatsSection: false,
+      showSection: '',
+      startDate: '2021-01-01',
+      endDate: '2021-12-31',
+      showChart: false,
+      isChartVisible: [],
+      currentPage: 1,
+      pageSize: 50,
+      showTable: true,
       reviewHeaders: [
-        '城市', '河流', '流域', '断面名称', '监测时间', 
-        '水质类别', '水温', 'pH', '溶解氧', '高锰酸钾', 
+        '城市', '河流', '流域', '断面名称', '监测时间',
+        '水质类别', '水温', 'pH', '溶解氧', '高锰酸钾',
         '氨氮', '总磷', '总氮', '电导率', '浊度'
-      ], // 显示的表格列
+      ],
+      filteredData: [], // 存储异常数据
     };
   },
   computed: {
-    // 计算当前页的数据
     paginatedData() {
       const start = (this.currentPage - 1) * this.pageSize;
       const end = start + this.pageSize;
@@ -130,9 +128,8 @@ export default {
     },
   },
   methods: {
-    // 显示数据展示部分
     async showDataDisplay() {
-      this.showSection = 'display'; // 切换到数据展示部分
+      this.showSection = 'display';
       try {
         const response = await axios.get(`/public/province/Zhejiang/${encodeURIComponent(this.river)}202101-202112.csv`);
         Papa.parse(response.data, {
@@ -140,7 +137,7 @@ export default {
           dynamicTyping: true,
           complete: (result) => {
             this.csvData = result.data;
-            this.tableHeaders = Object.keys(result.data[0]); // 获取CSV文件中的表头
+            this.tableHeaders = Object.keys(result.data[0]);
             this.initAutoScroll();
           },
         });
@@ -148,42 +145,35 @@ export default {
         console.error('数据加载失败', error);
       }
     },
-    
-    // 显示数据审查部分
+
     async showDataReview() {
       this.showSection = 'review';
-      // 使用特定路径读取异常数据文件
       try {
         const response = await axios.get(`/public/province/Zhejiang/Anomaly/${encodeURIComponent(this.river)}.csv`);
         Papa.parse(response.data, {
           header: true,
           dynamicTyping: true,
           complete: (result) => {
-            // 只过滤出异常数据，但保留所有字段（包括 SHAP 属性）
             this.filteredData = result.data.filter(row => row.Anomaly);
-            this.isChartVisible = this.filteredData.map(() => false); // 初始化每行图表显示状态为 false
+            this.isChartVisible = this.filteredData.map(() => false);
+            this.showTable = true; // 默认显示表格
           },
         });
       } catch (error) {
         console.error('异常数据加载失败', error);
       }
     },
-  
-    // 显示 SHAP 图表
-    showSHAPChart(index) {
-      // 隐藏表格，显示图表
-      this.showTable = false;
 
-      // 初始化 ECharts 图表
+    showSHAPChart(index) {
+      this.showTable = false;
       this.$nextTick(() => {
         const chartContainer = document.getElementById('shap-chart');
-
         if (chartContainer) {
           const chart = echarts.init(chartContainer);
           const selectedRow = this.filteredData[index];
           const shapData = this.shapAttributes.map(attr => {
             const value = selectedRow[attr];
-            return value < 0 ? 0 : value; // 负值替换为0
+            return value < 0 ? 0 : value;
           });
 
           const option = {
@@ -195,7 +185,7 @@ export default {
               {
                 name: 'SHAP 值',
                 type: 'bar',
-                data: shapData.sort((a, b) => b - a), // 降序排列
+                data: shapData.sort((a, b) => b - a),
               },
             ],
           };
@@ -203,8 +193,7 @@ export default {
         }
       });
     },
-    
-    // 初始化自动滚动功能
+
     initAutoScroll() {
       const tableContainer = document.querySelector('.table-container');
       let scrollAmount = 0;
@@ -212,20 +201,18 @@ export default {
         scrollAmount += 1;
         tableContainer.scrollTop = scrollAmount;
         if (scrollAmount >= tableContainer.scrollHeight - tableContainer.clientHeight) {
-          scrollAmount = 0; // 当到达底部时，重新开始
+          scrollAmount = 0;
         }
         requestAnimationFrame(step);
       };
       requestAnimationFrame(step);
     },
 
-    // 显示数据统计部分
     toggleDataStats() {
-      this.showStatsSection = !this.showStatsSection; // 显示/隐藏属性选择部分
-      this.showSection = 'stats'; // 切换到统计部分
+      this.showStatsSection = !this.showStatsSection;
+      this.showSection = 'stats';
     },
 
-    // 显示选择的属性的图表
     async showAttributeChart() {
       if (!this.selectedAttribute) {
         alert('请选择属性');
@@ -250,7 +237,6 @@ export default {
       }
     },
 
-    // 处理 CSV 数据
     processCSV(data) {
       return data.map(item => ({
         time: item['监测时间'],
@@ -264,7 +250,6 @@ export default {
         totalNitrogen: item['总氮'],
         conductivity: item['电导率'],
         turbidity: item['浊度'],
-        // 包含 SHAP 属性
         ...this.shapAttributes.reduce((acc, attr) => {
           acc[attr] = item[attr];
           return acc;
@@ -272,7 +257,6 @@ export default {
       }));
     },
 
-    // 初始化 ECharts 图表
     initChart() {
       const chart = echarts.init(document.getElementById('chart'));
       const attributeMap = {
@@ -343,7 +327,6 @@ export default {
       }
     },
 
-    // 根据日期筛选数据
     filterDataByDate() {
       const start = new Date(this.startDate);
       const end = new Date(this.endDate);
@@ -457,5 +440,8 @@ button:hover {
 thead {
   background-color: #1abc9c; /* 表头背景 */
   color: #fff;
+}
+h2{
+  color: #ffffff;
 }
 </style>

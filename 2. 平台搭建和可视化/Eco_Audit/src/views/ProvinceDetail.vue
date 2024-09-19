@@ -109,43 +109,48 @@ export default {
     },
   },
   methods: {
+   
     toggleOverview() {
-      this.showOverviewSection = !this.showOverviewSection;
-    },
-    toggleStatsSection() {
-      this.showStatsSection = !this.showStatsSection;
-      this.showSection = 'stats';
-    },
-    toggleRiverDetails() {
-      this.showRiverSection = !this.showRiverSection;
-    },
-    showDataDisplay() {
-      this.showSection = 'display';
-      this.loadExcelData();
-    },
-    async loadExcelData() {
-      try {
-        const response = await axios.get(`/public/province/Zhejiang/浙江杭州2021.csv`);
-        Papa.parse(response.data, {
-          header: true,
-          dynamicTyping: true,
-          complete: (result) => {
-            this.csvData = result.data;
-            this.tableHeaders = Object.keys(result.data[0]);
-            this.initAutoScroll();
-          },
-        });
-      } catch (error) {
-        console.error('加载数据失败:', error);
-      }
-    },
-    showAttributeChart() {
-      const chart = echarts.init(document.getElementById('chart'));
-      const data = this.csvData.filter(row => {
-        const date = new Date(row['监测时间']);
-        return date >= new Date(this.startDate) && date <= new Date(this.endDate);
-      });
+    this.showOverviewSection = !this.showOverviewSection;
+  },
+  toggleStatsSection() {
+    this.showStatsSection = !this.showStatsSection;
+    this.showSection = 'stats';
 
+    // 当显示统计部分时加载数据
+    if (this.showStatsSection) {
+      this.loadExcelData(); // 加载数据
+    }
+  },
+  toggleRiverDetails() {
+    this.showRiverSection = !this.showRiverSection;
+  },
+  showDataDisplay() {
+    this.showSection = 'display';
+    this.loadExcelData();
+  },
+  async loadExcelData() {
+    try {
+      const response = await axios.get(`/public/province/Zhejiang/浙江杭州2021.csv`);
+      Papa.parse(response.data, {
+        header: true,
+        dynamicTyping: true,
+        complete: (result) => {
+          this.csvData = result.data;
+          this.tableHeaders = Object.keys(result.data[0]);
+          this.initAutoScroll();
+        },
+      });
+    } catch (error) {
+      console.error('加载数据失败:', error);
+    }
+  },
+  showAttributeChart() {
+    const chart = echarts.init(document.getElementById('chart'));
+    const data = this.csvData.filter(row => {
+      const date = new Date(row['监测时间']);
+      return date >= new Date(this.startDate) && date <= new Date(this.endDate);
+    });
       if (this.selectedAttribute === '水质类别') {
         const waterQualityCount = {};
         data.forEach(item => {
@@ -195,22 +200,22 @@ export default {
       }
     },
     initAutoScroll() {
-      const tableContainer = document.querySelector('.table-container');
-      let scrollAmount = 0;
-      const step = () => {
-        scrollAmount += 1;
-        tableContainer.scrollTop = scrollAmount;
-        if (scrollAmount >= tableContainer.scrollHeight - tableContainer.clientHeight) {
-          scrollAmount = 0; // 当到达底部时，重新开始
-        }
-        requestAnimationFrame(step);
-      };
+    const tableContainer = document.querySelector('.table-container');
+    let scrollAmount = 0;
+    const step = () => {
+      scrollAmount += 2;
+      tableContainer.scrollTop = scrollAmount;
+      if (scrollAmount >= tableContainer.scrollHeight - tableContainer.clientHeight) {
+        scrollAmount = 0; // 当到达底部时，重新开始
+      }
       requestAnimationFrame(step);
-    },
-    selectRiver(river) {
-      this.$router.push({ name: 'RiverDetail', params: { river } });
-    },
+    };
+    requestAnimationFrame(step);
   },
+  selectRiver(river) {
+    this.$router.push({ name: 'RiverDetail', params: { river } });
+  },
+},
 };
 </script>
 

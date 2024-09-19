@@ -42,66 +42,121 @@ export default {
 
 <style scoped>
 .main-container {
-  background-color: rgb(250, 243, 243);
   display: flex;
-  justify-content: space-between;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* 增加轻微的阴影效果 */
+  background-color: rgb(171, 212, 238);
+  height: 100vh; /* 满屏高度 */
+  border-radius: 10px; /* 圆角 */
 }
 
 .left-panel {
-  background-color: rgb(250, 243, 243);
-  width: 24%; /* 左侧省份选择区域宽度 */
-  padding-right: 20px;
+  width: 20%; /* 左侧区域宽度 */
+  background-color: #2c3e50; /* 深色背景 */
+  color: #ecf0f1; /* 文字颜色 */
+  padding: 20px;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+  border-radius: 10px 0 0 10px; /* 圆角 */
 }
 
 h2 {
   font-size: 24px;
+  color: #ecf0f1;
   margin-bottom: 15px;
-  color: #333;
-  border-bottom: 2px solid #e0e0e0;
+  border-bottom: 1px solid #34495e; /* 底部边框 */
+  padding-bottom: 10px;
 }
 
 .scroll-container {
-  max-height: 800px; /* 控制左侧省份列表的高度，超出时滚动 */
-  overflow-y: auto;
-  border: 1px solid #ccc; /* 可选的样式 */
+  max-height: 800px; /* 控制左侧列表高度 */
+  overflow-y: auto; /* 纵向滚动 */
+  border: 1px solid #34495e; /* 边框颜色 */
   padding: 10px;
-  border-radius: 8px; /* 增加圆角 */
-  background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); /* 增加渐变背景 */
+  border-radius: 5px; /* 圆角 */
+  background-color: #34495e; /* 背景色 */
 }
 
 ul {
   list-style-type: none;
   padding: 0;
+  margin-top: 20px;
 }
 
 li {
   cursor: pointer;
-  padding: 10px;
-  border-bottom: 1px solid #ccc;
-  transition: background-color 0.3s, font-weight 0.3s; /* 增加平滑的过渡效果 */
+  padding: 15px 10px;
+  background-color: #34495e; /* 列表项背景色 */
+  margin-bottom: 10px;
+  border-radius: 5px;
+  transition: all 0.3s ease; /* 平滑过渡 */
+  color: #ecf0f1; /* 文字颜色 */
 }
 
 li:hover {
-  background-color: #e0e0e0;
-  font-weight: bold; /* 鼠标悬停时字体加粗 */
+  background-color: #1abc9c; /* 悬停时背景色 */
+  color: white; /* 悬停时文字颜色 */
+  transform: translateX(5px); /* 悬停时移动效果 */
 }
 
 .right-panel {
-  width: 70%; /* 右侧图片展示区域宽度 */
+  width: 70%; /* 右侧内容区域宽度 */
   text-align: center;
-  background-color: rgb(250, 243, 243);
-  border-radius: 10px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: rgb(171, 212, 238);
+  border-radius: 10px; /* 圆角 */
   padding: 20px;
 }
 
 .main-image {
-  max-width: 95%;
+  max-width: 85%;
   height: auto;
-  border-radius: 10px; /* 增加图片的圆角 */
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* 为图片增加轻微阴影 */
+  border-radius: 8px; /* 圆角 */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+}
+
+.table-container {
+  height: 750px;
+  overflow-y: auto; /* 纵向滚动 */
+  padding: 10px;
+  border-radius: 8px; /* 圆角 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+  background-color: rgb(193, 215, 248); /* 背景色 */
+  border: 2px solid rgb(26, 27, 30); /* 边框颜色 */
+}
+
+.table-container th,
+.table-container td {
+  border: 2px solid rgb(39, 42, 48); /* 表格内部边框颜色 */
+  padding: 8px;
+  text-align: left;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+thead {
+  background-color: #7bd27f; /* 表头背景色 */
+  color: #fff; /* 表头文字颜色 */
+}
+
+.submenu {
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.submenu button {
+  margin-top: 10px;
+  background-color: #1abc9c; /* 按钮背景色 */
+  color: white; /* 按钮文字颜色 */
+  border: none;
+  padding: 12px;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.submenu button:hover {
+  background-color: #16a085; /* 悬停时按钮背景色 */
 }
 </style>
